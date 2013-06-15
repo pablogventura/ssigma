@@ -1,0 +1,8 @@
+if p1 begins h goto l3
+n2 <- n2 + 1
+if n2 != 0 goto l4
+l3 n1 <- n1 + 1
+l4 n1 <- n1 + 1
+n1 <- n1 -·- 1
+
+
