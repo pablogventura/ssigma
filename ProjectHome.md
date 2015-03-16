@@ -1,0 +1,1 @@
+Interprete desarrollado en Python, para el lenguaje teorico S Sigma.
