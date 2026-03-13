@@ -57,3 +57,24 @@ class TestMacro(unittest.TestCase):
         reg = registro_por_defecto()
         with self.assertRaises(MacroError):
             reg.expandir_llamada("SUMA", [1, 2])
+
+    def test_resta_mult_pred_doble_max_min(self):
+        from ssigma import Ejecucion
+        reg = registro_por_defecto()
+        e = Ejecucion(Programa([]))
+        e.debug = False
+        for nombre, args, setup, esperado in [
+            ("RESTA", [1, 10, 4], lambda ex: (ex.numericas.__setitem__(10, 10), ex.numericas.__setitem__(4, 4)), 6),
+            ("MULT", [1, 2, 3], lambda ex: (ex.numericas.__setitem__(2, 3), ex.numericas.__setitem__(3, 4)), 12),
+            ("PRED", [1, 2], lambda ex: ex.numericas.__setitem__(2, 5), 4),
+            ("DOBLE", [1, 2], lambda ex: ex.numericas.__setitem__(2, 7), 14),
+            ("MAX", [1, 2, 3], lambda ex: (ex.numericas.__setitem__(2, 3), ex.numericas.__setitem__(3, 8)), 8),
+            ("MIN", [1, 2, 3], lambda ex: (ex.numericas.__setitem__(2, 5), ex.numericas.__setitem__(3, 2)), 2),
+        ]:
+            ins = reg.expandir_llamada(nombre, args)
+            prog = Programa(ins)
+            ex = Ejecucion(prog)
+            ex.debug = False
+            setup(ex)
+            ex.ejecutar()
+            self.assertEqual(ex.numericas[1], esperado, "macro %s" % nombre)

@@ -62,3 +62,21 @@ class TestEjemplos(unittest.TestCase):
         e.numericas[3] = 7
         e.ejecutar()
         self.assertEqual(e.numericas[1], 17)
+
+    def test_resta_macro(self):
+        prog = self._prog_desde_archivo("resta_macro.code", con_macros=True)
+        e = Ejecucion(prog)
+        e.debug = False
+        e.numericas[2] = 10
+        e.numericas[3] = 4
+        e.ejecutar()
+        self.assertEqual(e.numericas[1], 6)
+
+    def test_mult_macro(self):
+        prog = self._prog_desde_archivo("mult_macro.code", con_macros=True)
+        e = Ejecucion(prog)
+        e.debug = False
+        e.numericas[2] = 3
+        e.numericas[3] = 4
+        e.ejecutar()
+        self.assertEqual(e.numericas[1], 12)
