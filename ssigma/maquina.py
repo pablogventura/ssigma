@@ -52,12 +52,15 @@ class Ejecucion(object):
         if 0 <= self.linea < len(self.programa.ins):
             inst = self.programa.ins[self.linea]
             if self.debug:
-                if inst.es_numerica:
-                    print("%s:\t%s\t N%s=%s" % (
-                        self.linea, inst, inst.var, self.numericas[inst.var]))
+                if inst.var != 0:
+                    if inst.es_numerica:
+                        print("%s:\t%s\t N%s=%s" % (
+                            self.linea, inst, inst.var, self.numericas[inst.var]))
+                    else:
+                        print("%s:\t%s\t P%s=%s" % (
+                            self.linea, inst, inst.var, self.alfabeticas[inst.var]))
                 else:
-                    print("%s:\t%s\t P%s=%s" % (
-                        self.linea, inst, inst.var, self.alfabeticas[inst.var]))
+                    print("%s:\t%s" % (self.linea, inst))
             ejecutar_paso(inst, self)
         else:
             self.termino = True

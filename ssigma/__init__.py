@@ -12,6 +12,7 @@ from .instrucciones import (
     Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico,
 )
 from .exceptions import SSigmaError, ParseError, LabelNotFoundError
+from .macros import Macro, RegistroMacros, registro_por_defecto, MacroError
 
 __all__ = [
     "Parser", "Programa", "Ejecucion", "Infinitupla",
@@ -20,4 +21,5 @@ __all__ = [
     "IfNumerico", "Goto", "Skip",
     "Agregar", "Quitar", "VaciarPalabra", "CopiaPalabra", "IfAlfabetico",
     "SSigmaError", "ParseError", "LabelNotFoundError",
+    "Macro", "RegistroMacros", "registro_por_defecto", "MacroError",
 ]
