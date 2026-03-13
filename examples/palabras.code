@@ -1,0 +1,7 @@
+P1 <- EPSILON
+P1 <- P1 a
+P1 <- P1 b
+P2 <- P1
+IF P1 BEGINS a GOTO L1
+N1 <- N1 + 1
+L1 SKIP

@@ -40,7 +40,7 @@ PATRONES = [
     (r"^[ ]*N(?P<var>[0-9]+)[ ]*<-[ ]*0[ ]*$", lambda m: Cero(m.group("var"))),
     (r"^[ ]*N(?P<var1>[0-9]+)[ ]*<-[ ]*N(?P<var2>[0-9]+)[ ]*$", lambda m: CopiaNumerica(m.group("var1"), m.group("var2"))),
     (r"^[ ]*IF[ ]*N(?P<var>[0-9]+)[ ]*!=[ ]*0[ ]*GOTO[ ]*L(?P<destino>[0-9]+)[ ]*$", lambda m: IfNumerico(m.group("var"), m.group("destino"))),
-    (r"^[ ]*P(?P<var1>[0-9]+)[ ]*<-[ ]*P(?P<var2>[0-9]+)(?P<simbolo>[^ ]*)[ ]*$", _agregar),
+    (r"^[ ]*P(?P<var1>[0-9]+)[ ]*<-[ ]*P(?P<var2>[0-9]+)[ ]*(?P<simbolo>.)[ ]*$", _agregar),
     (r"^[ ]*P(?P<var1>[0-9]+)[ ]*<-[ ]*\^P(?P<var2>[0-9]+)[ ]*$", _quitar),
     (r"^[ ]*P(?P<var>[0-9]+)[ ]*<-[ ]*EPSILON[ ]*$", lambda m: VaciarPalabra(m.group("var"))),
     (r"^[ ]*P(?P<var1>[0-9]+)[ ]*<-[ ]*P(?P<var2>[0-9]+)[ ]*$", lambda m: CopiaPalabra(m.group("var1"), m.group("var2"))),
