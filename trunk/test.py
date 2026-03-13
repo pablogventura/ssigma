@@ -1,14 +1,18 @@
 #!/usr/bin/env python
-# -*- coding: utf8 -*-
-# This file is part of S-Sigma.
-# This code was written by Pablo Ventura in 2013, and is covered by the GPLv3.
+# -*- coding: utf-8 -*-
+# Script de prueba para S-Sigma.
 
-from parser import *
+import os
+from ssigma import Parser, Ejecucion
 
-p=Parser()
+def main():
+    p = Parser()
+    ruta = os.path.join(os.path.dirname(__file__), "examples", "devuelveunoconh.code")
+    prog = p.programa_desde_archivo(ruta)
+    e = Ejecucion(prog)
+    f = e.orquilla_numerica(0, 1)  # 0 numéricos, 1 alfabético (P1)
+    result = f("g")
+    print("Resultado N1:", result)
 
-h=p.programa_desde_archivo("devuelveunoconh.code")
-e=Ejecucion(h)
-f=e.orquilla_numerica(0,1)
-f("g")
-
+if __name__ == "__main__":
+    main()
