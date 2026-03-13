@@ -5,6 +5,7 @@
 import re
 from ..instrucciones import (
     Sucesor, RestaPunto, Cero, CopiaNumerica, IfNumerico, Goto, Skip,
+    PrintNumerico, PrintPalabra, InputNumerico, InputPalabra,
     Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico,
 )
 
@@ -35,6 +36,10 @@ def _ifalfabetico(m):
 PATRONES = [
     (r"^[ ]*GOTO[ ]*L(?P<destino>[0-9]+)[ ]*$", lambda m: Goto(m.group("destino"))),
     (r"^[ ]*SKIP[ ]*$", lambda m: Skip()),
+    (r"^[ ]*PRINT[ ]*N(?P<var>[0-9]+)[ ]*$", lambda m: PrintNumerico(m.group("var"))),
+    (r"^[ ]*PRINT[ ]*P(?P<var>[0-9]+)[ ]*$", lambda m: PrintPalabra(m.group("var"))),
+    (r"^[ ]*INPUT[ ]*N(?P<var>[0-9]+)[ ]*$", lambda m: InputNumerico(m.group("var"))),
+    (r"^[ ]*INPUT[ ]*P(?P<var>[0-9]+)[ ]*$", lambda m: InputPalabra(m.group("var"))),
     (r"^[ ]*N(?P<var1>[0-9]+)[ ]*<-[ ]*N(?P<var2>[0-9]+)[ ]*\+[ ]*1[ ]*$", _sucesor),
     (r"^[ ]*N(?P<var1>[0-9]+)[ ]*<-[ ]*N(?P<var2>[0-9]+)[ ]*-·-[ ]*1[ ]*$", _restapunto),
     (r"^[ ]*N(?P<var>[0-9]+)[ ]*<-[ ]*0[ ]*$", lambda m: Cero(m.group("var"))),

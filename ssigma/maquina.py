@@ -18,12 +18,14 @@ class Ejecucion(object):
         self.linea = 0
         self.termino = False
         self.debug = True
+        self.num_pasos = 0
 
     def reset(self):
         self.numericas = Infinitupla(True)
         self.alfabeticas = Infinitupla(False)
         self.linea = 0
         self.termino = False
+        self.num_pasos = 0
 
     def orquilla_numerica(self, n_numericos, n_alfabeticos):
         """Devuelve una función (n₁,…,nₙ, p₁,…,pₘ) → N1 al terminar (Ψ_P^{n,m,#})."""
@@ -50,6 +52,7 @@ class Ejecucion(object):
     def paso(self):
         """Un paso de transición: ejecuta la instrucción actual o marca terminación."""
         if 0 <= self.linea < len(self.programa.ins):
+            self.num_pasos += 1
             inst = self.programa.ins[self.linea]
             if self.debug:
                 if inst.var != 0:

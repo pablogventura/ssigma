@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import unittest
+from io import StringIO
 from ssigma import Programa, Ejecucion
+from ssigma.exceptions import ExecutionError
 from ssigma.instrucciones import (
     Sucesor, RestaPunto, Cero, CopiaNumerica, IfNumerico, Goto, Skip,
+    PrintNumerico, PrintPalabra, InputNumerico, InputPalabra,
     Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico,
 )
 
@@ -85,6 +88,63 @@ class TestEjecutorNumerico(unittest.TestCase):
         e.debug = False
         e.ejecutar()
         self.assertEqual(e.numericas[1], 1)
+
+    def test_print_numerico(self):
+        prog = Programa([Sucesor(1), Sucesor(1), PrintNumerico(1)])
+        e = Ejecucion(prog)
+        e.debug = False
+        e.salida = out = StringIO()
+        e.ejecutar()
+        self.assertEqual(out.getvalue(), "2\n")
+
+    def test_print_palabra(self):
+        prog = Programa([Agregar(1, "a"), Agregar(1, "b"), PrintPalabra(1)])
+        e = Ejecucion(prog)
+        e.debug = False
+        e.salida = out = StringIO()
+        e.ejecutar()
+        self.assertEqual(out.getvalue(), "ab\n")
+
+    def test_input_numerico(self):
+        prog = Programa([InputNumerico(1), Sucesor(1), PrintNumerico(1)])
+        e = Ejecucion(prog)
+        e.debug = False
+        e.entrada = iter(["10"])
+        e.salida = out = StringIO()
+        e.ejecutar()
+        self.assertEqual(e.numericas[1], 11)
+        self.assertEqual(out.getvalue(), "11\n")
+
+    def test_input_palabra(self):
+        prog = Programa([InputPalabra(1), PrintPalabra(1)])
+        e = Ejecucion(prog)
+        e.debug = False
+        e.entrada = iter(["hola"])
+        e.salida = out = StringIO()
+        e.ejecutar()
+        self.assertEqual(e.alfabeticas[1], "hola")
+        self.assertEqual(out.getvalue(), "hola\n")
+
+    def test_input_numerico_no_numerico_levanta_execution_error(self):
+        prog = Programa([InputNumerico(1)])
+        e = Ejecucion(prog)
+        e.debug = False
+        e.entrada = iter(["abc"])
+        with self.assertRaises(ExecutionError) as ctx:
+            e.ejecutar()
+        self.assertIn("Entrada no numérica", str(ctx.exception))
+        self.assertIn("INPUT N1", str(ctx.exception))
+        self.assertIn("Instrucción", str(ctx.exception))
+
+    def test_input_numerico_sin_mas_entrada_levanta_execution_error(self):
+        prog = Programa([InputNumerico(1), InputNumerico(2)])
+        e = Ejecucion(prog)
+        e.debug = False
+        e.entrada = iter(["5"])
+        with self.assertRaises(ExecutionError) as ctx:
+            e.ejecutar()
+        self.assertIn("No hay más entrada", str(ctx.exception))
+        self.assertIn("INPUT N2", str(ctx.exception))
 
 
 class TestEjecutorPalabras(unittest.TestCase):

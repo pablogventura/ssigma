@@ -19,6 +19,7 @@
 import re
 from .instrucciones import (
     Sucesor, RestaPunto, Cero, CopiaNumerica, IfNumerico, Goto, Skip,
+    PrintNumerico, PrintPalabra, InputNumerico, InputPalabra,
     Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico,
 )
 from .exceptions import SSigmaError
@@ -101,6 +102,14 @@ def _instruccion_desde_template(d, sustitucion):
         return Goto(_valor("destino", d, sustitucion), label=label)
     if tipo == "Skip":
         return Skip(label=label)
+    if tipo == "PrintNumerico":
+        return PrintNumerico(_valor("var", d, sustitucion), label=label)
+    if tipo == "PrintPalabra":
+        return PrintPalabra(_valor("var", d, sustitucion), label=label)
+    if tipo == "InputNumerico":
+        return InputNumerico(_valor("var", d, sustitucion), label=label)
+    if tipo == "InputPalabra":
+        return InputPalabra(_valor("var", d, sustitucion), label=label)
     if tipo == "Agregar":
         return Agregar(
             _valor("var", d, sustitucion),

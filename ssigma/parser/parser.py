@@ -3,7 +3,10 @@
 # Parser: líneas de texto → Programa.
 
 import re
+import os
 from ..programa import Programa
+from ..instrucciones import Skip
+from ..exceptions import ParseError
 from .patrones import PATRONES, REGEX_LABEL
 from .macro_def_parser import cargar_archivo_macros, cargar_macros_desde_ruta
 
@@ -39,8 +42,10 @@ class Parser(object):
             for mf in macro_files:
                 cargar_macros_desde_ruta(path, mf, self.registro_macros, encoding)
         result = []
+        next_aux = [1000]
+        archivo_nombre = os.path.basename(path) if path else None
         with open(path, "r", encoding=encoding) as f:
-            for line in f:
+            for num_linea, line in enumerate(f, start=1):
                 linea_strip = line.strip()
                 if linea_strip:
                     mm = REGEX_INCLUDE.match(linea_strip)
@@ -52,7 +57,19 @@ class Parser(object):
                     if verbose:
                         print("(INCLUDE %s)" % path_include)
                     continue
-                inst = self.instruccion(line)
+                if linea_strip.startswith("#"):
+                    continue
+                if not linea_strip:
+                    break
+                try:
+                    inst = self.instruccion(line, next_aux=next_aux)
+                except Exception as err:
+                    raise ParseError(
+                        "error al expandir macro o instrucción: %s" % err,
+                        num_linea=num_linea,
+                        archivo=archivo_nombre,
+                        fragmento=line
+                    )
                 if inst is not None:
                     if verbose:
                         for i in (inst if isinstance(inst, list) else [inst]):
@@ -62,7 +79,13 @@ class Parser(object):
                     else:
                         result.append(inst)
                 else:
-                    break
+                    raise ParseError(
+                        "instrucción no reconocida (sintaxis inválida o macro no registrada). "
+                        "Formato esperado: Nk<-0, Nk<-Nn, Nk<-Nk+1, Nk<-Nk-·-1, IF Nk!=0 GOTO Lm, GOTO Lm, SKIP, PRINT Nk, INPUT Nk, o MACRO(Na,Nb,...)",
+                        num_linea=num_linea,
+                        archivo=archivo_nombre,
+                        fragmento=line
+                    )
         if verbose:
             print("-----FIN PARSEO-----")
         return Programa(result)
@@ -85,8 +108,9 @@ class Parser(object):
                 break
         return Programa(result)
 
-    def instruccion(self, linea):
-        """Parsea una línea; devuelve Instruccion, lista de Instruccion (macro), o None."""
+    def instruccion(self, linea, next_aux=None):
+        """Parsea una línea; devuelve Instruccion, lista de Instruccion (macro), o None.
+        next_aux: lista [int] opcional; se usa y actualiza para labels/vars auxiliares únicos por expansión."""
         if linea is None:
             return None
         linea = linea.upper().strip()
@@ -106,17 +130,22 @@ class Parser(object):
                 nombre = mm.group("nombre")
                 args_str = mm.group("args")
                 args = _parsear_args_macro(args_str)
-                try:
-                    expansion = self.registro_macros.expandir_llamada(nombre, args)
-                except Exception:
-                    return None
+                aux = next_aux[0] if next_aux is not None else 1000
+                expansion = self.registro_macros.expandir_llamada(
+                    nombre, args, aux_var_inicio=aux, aux_label_inicio=aux
+                )
+                if next_aux is not None:
+                    next_aux[0] = aux + max(len(expansion), 50)
                 if expansion and label is not None:
-                    expansion[0].label = label
+                    return [Skip(label=label)] + expansion
                 return expansion
         return None
 
     def _parse_label(self, linea):
         m = REGEX_LABEL.match(linea)
         if m:
-            return int(m.group("label")), m.group("resto").strip()
+            resto = m.group("resto").strip()
+            if resto.startswith(":"):
+                resto = resto[1:].strip()
+            return int(m.group("label")), resto
         return None, linea

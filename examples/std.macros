@@ -1,0 +1,25 @@
+# SUMA y RESTA para ejemplos (Fibonacci, primo)
+MACRO SUMA V1 V2 V3
+V4 <- V2
+V5 <- V3
+V1 <- V4
+A1: IF V5 != 0 GOTO A2
+GOTO A3
+A2: V5 <- V5 -·- 1
+V1 <- V1 + 1
+GOTO A1
+A3: SKIP
+ENDMACRO
+
+MACRO RESTA V1 V2 V3
+V1 <- V2
+V4 <- V3
+A1: IF V4 != 0 GOTO A2
+GOTO A4
+A2: V4 <- V4 -·- 1
+IF V1 != 0 GOTO A3
+GOTO A1
+A3: V1 <- V1 -·- 1
+GOTO A1
+A4: SKIP
+ENDMACRO

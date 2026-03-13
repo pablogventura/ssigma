@@ -4,6 +4,7 @@
 from .base import Instruccion
 from .numericas import (
     Sucesor, RestaPunto, Cero, CopiaNumerica, IfNumerico, Goto, Skip,
+    PrintNumerico, PrintPalabra, InputNumerico, InputPalabra,
 )
 from .palabras import Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico
 
@@ -13,6 +14,7 @@ INSTRUCCIONES_CON_DESTINO = (IfNumerico, IfAlfabetico, Goto)
 __all__ = [
     "Instruccion",
     "Sucesor", "RestaPunto", "Cero", "CopiaNumerica", "IfNumerico", "Goto", "Skip",
+    "PrintNumerico", "PrintPalabra", "InputNumerico", "InputPalabra",
     "Agregar", "Quitar", "VaciarPalabra", "CopiaPalabra", "IfAlfabetico",
     "INSTRUCCIONES_CON_DESTINO",
 ]

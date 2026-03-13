@@ -1,11 +1,64 @@
 # S-Sigma — Implementación del lenguaje S^Σ
 
-Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann). La definición formal está en el directorio **`definicion/`** del repositorio:
+Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann). La definición formal está en **`definicion/`** (def.html, RESUMEN_LENGUAJE_S_SIGMA.md).
 
-- **definicion/def.html** — Documento principal (sección 4.3)
-- **definicion/RESUMEN_LENGUAJE_S_SIGMA.md** — Resumen de sintaxis y semántica
+---
 
-## Estructura
+## Cómo programar en S^Σ
+
+### Archivos de programa (`.code`)
+
+- **Una instrucción por línea.** La línea puede empezar opcionalmente por una **etiqueta** `L1`, `L2`, … (sin espacio entre L y el número).
+- **Línea en blanco** = fin del programa (el parser deja de leer).
+- **Mayúsculas/minúsculas**: el parser normaliza a mayúsculas.
+- **Variables**: `N1`, `N2`, … (números naturales, índice ≥ 1); `P1`, `P2`, … (palabras sobre el alfabeto).
+- **Comentarios**: no hay sintaxis oficial; en archivos `.macros` se usa `#`.
+
+Ejemplo mínimo:
+
+```
+N1 <- 0
+N1 <- N1 + 1
+N1 <- N1 + 1
+SKIP
+```
+
+(Deja N1 = 2 y termina.)
+
+### Usar macros en un programa
+
+Puedes llamar a macros **predefinidos** (SUMA, RESTA, MULT, etc.) o a los que tú definas:
+
+- **Opción A — Con macros predefinidos:** usa un parser que tenga el registro de macros y escribe en el `.code` una línea como `SUMA(N1, N2, N3)` (resultado en N1, argumentos N2 y N3).
+- **Opción B — Incluir tus macros:** en el propio `.code` pon primero `INCLUDE ruta.macros` (ruta relativa al archivo). Después ya puedes usar `NOMBRE(N1, N2, …)` en ese archivo.
+
+### Definir tus propios macros (archivos `.macros`)
+
+En un archivo de texto (p. ej. `mis.macros`) defines macros con la **misma sintaxis** que el lenguaje, pero usando **variables de macro** (V1, V2, … para numéricas; A1, A2, … para etiquetas; W1, W2, … para palabras):
+
+```
+MACRO SUMA V1 V2 V3
+V4 <- V2
+V5 <- V3
+V1 <- V4
+A1: IF V5 != 0 GOTO A2
+GOTO A3
+A2: V5 <- V5 -·- 1
+V1 <- V1 + 1
+GOTO A1
+A3: SKIP
+ENDMACRO
+```
+
+- **MACRO** nombre y lista de parámetros (V1, V2, … en el orden que quieras).
+- Cuerpo: instrucciones como siempre, con Vn, An (y opcionalmente N, L). Los nombres que aparezcan en el cuerpo y no estén en la lista de parámetros se tratan como **auxiliares** (se les asignan índices frescos al expandir).
+- **ENDMACRO** cierra el bloque. Líneas que empiecen por `#` son comentarios.
+
+Ver **`examples/mi_suma.macros`** y **`examples/prog_con_include.code`**.
+
+---
+
+## Estructura del proyecto
 
 ```
 ssigma/                 # Paquete principal
@@ -17,7 +70,9 @@ ssigma/                 # Paquete principal
     palabras.py        # Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico
   parser/               # Parser de líneas → Programa
     patrones.py         # Regex y fábricas por tipo (data-driven)
-    parser.py           # Parser
+    parser.py           # Parser, INCLUDE
+    macro_def_parser.py # Carga de archivos .macros (MACRO/ENDMACRO)
+  macros.py             # Macro, RegistroMacros, expansión, predefinidos
   programa.py           # Programa, cargar/guardar (pickle)
   maquina.py            # Ejecución (estado, paso, orquilla Ψ_P)
   ejecutor.py           # Semántica: un paso por tipo de instrucción
@@ -46,30 +101,87 @@ Notación formal (definición) vs ASCII (esta implementación):
 | Pk̄←ε          | `Pk <- epsilon`      | Vaciar palabra           |
 | Pk̄←Pn̄         | `Pk <- Pn`           | Copia palabra            |
 | IF Pk̄ BEGINS a GOTO Lm̄ | `IF Pk BEGINS a GOTO Lm` | Condicional palabra |
+| **PRINT Nk** (extensión) | `PRINT Nk` | Imprime el valor de Nk |
+| **PRINT Pk** (extensión) | `PRINT Pk` | Imprime el valor de Pk |
+| **INPUT Nk** (extensión) | `INPUT Nk` | Lee un entero y lo guarda en Nk |
+| **INPUT Pk** (extensión) | `INPUT Pk` | Lee una línea y la guarda en Pk |
 
 Las etiquetas son opcionales: **Lk** al inicio de la línea. Índices desde 1 (N1, P1, L1, …).
 
-## Uso
+## Uso desde Python
 
 Desde la raíz del repositorio:
+
+**Programa sin macros:**
 
 ```python
 from ssigma import Parser, Ejecucion
 
 p = Parser()
+prog = p.programa_desde_archivo("examples/solo_numericos.code")
+e = Ejecucion(prog)
+e.debug = False
+e.ejecutar()
+print(e.numericas[1])   # resultado en N1
+```
+
+**Programa que usa macros (incluidos por INCLUDE o predefinidos):**
+
+```python
+from ssigma import Parser, Ejecucion
+
+# Si el .code tiene INCLUDE, no hace falta pasar registro; se crea uno y se cargan los .macros
+p = Parser()
+prog = p.programa_desde_archivo("examples/prog_con_include.code")
+e = Ejecucion(prog)
+e.debug = False
+e.numericas[2] = 10
+e.numericas[3] = 7
+e.ejecutar()
+print(e.numericas[1])   # 17
+```
+
+**Programa con macros predefinidos (SUMA, RESTA, …) sin INCLUDE:**
+
+```python
+from ssigma import Parser, Ejecucion, registro_por_defecto
+
+p = Parser(registro_macros=registro_por_defecto())
+prog = p.programa_desde_archivo("examples/suma_macro.code")
+e = Ejecucion(prog)
+e.debug = False
+e.numericas[2], e.numericas[3] = 10, 7
+e.ejecutar()
+print(e.numericas[1])
+```
+
+**Orquilla numérica** (entrada/salida como función Ψ_P): estado inicial N1…Nn, P1…Pm; al terminar devuelve N1:
+
+```python
 prog = p.programa_desde_archivo("examples/devuelveunoconh.code")
 e = Ejecucion(prog)
-
-# Orquilla numérica: función (n₁,…,nₙ, p₁,…,pₘ) → N1 al terminar (Ψ_P^{n,m,#})
-f = e.orquilla_numerica(0, 1)  # 0 entradas numéricas, 1 alfabética (P1)
-resultado = f("g")             # P1 = "g", devuelve N1 al terminar
+f = e.orquilla_numerica(0, 1)  # 0 numéricos, 1 palabra (P1)
+resultado = f("g")              # P1 = "g" → devuelve N1 al terminar
 ```
 
-Ejecutar el script de prueba:
+**PRINT e INPUT:** Por defecto PRINT escribe en la salida estándar e INPUT lee con `input()`. Para tests o redirección: asigna `e.salida` (objeto con `.write()`) y/o `e.entrada` (iterador de líneas, p. ej. `iter(["5", "hola"])`).
+
+**Tests y script de prueba:**
 
 ```bash
+python3 -m unittest discover -s tests -v
 python3 test.py
 ```
+
+## Resumen rápido
+
+| Qué quieres hacer | Dónde mirar |
+|-------------------|-------------|
+| Sintaxis de cada instrucción | Tabla "Instrucciones implementadas" arriba; **definicion/RESUMEN_LENGUAJE_S_SIGMA.md** |
+| Ejemplos de programas | **examples/** y **examples/README.md** |
+| Definir macros en archivos | Sección "Definir tus propios macros" arriba; **examples/mi_suma.macros** |
+| Incluir macros desde un .code | Línea `INCLUDE ruta.macros`; **examples/prog_con_include.code** |
+| Definición formal del lenguaje | **definicion/def.html** (sección 4.3), **definicion/COBERTURA_IMPLEMENTACION.md** |
 
 ## Requisitos
 

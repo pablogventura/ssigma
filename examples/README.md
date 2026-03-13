@@ -1,6 +1,18 @@
 # Ejemplos de programas S^Σ
 
-Programas en sintaxis concreta para cargar con `Parser().programa_desde_archivo(...)` o `Parser(registro_por_defecto()).programa_desde_archivo(...)` si usan macros.
+Programas en sintaxis concreta. Para cargar y ejecutar (desde la raíz del repo):
+
+```python
+from ssigma import Parser, Ejecucion
+p = Parser()
+prog = p.programa_desde_archivo("examples/solo_numericos.code")  # o prog_con_include.code si usas INCLUDE
+e = Ejecucion(prog)
+e.debug = False
+e.ejecutar()
+print(e.numericas[1])  # resultado en N1
+```
+
+Si el programa usa macros predefinidos (SUMA, RESTA, …) sin INCLUDE: `Parser(registro_macros=registro_por_defecto())`.
 
 | Archivo | Descripción | Resultado esperado (N1/P1) |
 |---------|-------------|----------------------------|
@@ -12,6 +24,10 @@ Programas en sintaxis concreta para cargar con `Parser().programa_desde_archivo(
 | `suma_macro.code` | SUMA(N1, N2, N3). Requiere parser con `registro_macros`. | N2=10, N3=7 → N1=17 |
 | `resta_macro.code` | RESTA(N1, N2, N3) = N2 −· N3. Requiere registro_macros. | N2=10, N3=4 → N1=6 |
 | `mult_macro.code` | MULT(N1, N2, N3) = N2*N3. Requiere registro_macros. | N2=3, N3=4 → N1=12 |
+| `print_ejemplo.code` | PRINT N1, PRINT N2 (extensión). | Imprime 2 y 3 |
+| `input_ejemplo.code` | INPUT N1, INPUT N2, N1+1, PRINT N1, PRINT N2. Para probar sin teclado: `e.entrada = iter(["5", "100"])`. | N1=6, N2=100, imprime 6 y 100 |
+| `fibonacci.code` | Calcula F_n (F_0=0, F_1=1). Entrada N1=n, salida N3=F_n y PRINT N3. Requiere SUMA y RESTA (`registro_por_defecto()` o INCLUDE std.macros). | N1=10 → N3=55, F_0=0 |
+| `primo.code` | Decide si N1=n es primo (N2=1) o no (N2=0). Usa RESTA para resto y comparación. INCLUDE std.macros o registro. | N1=7 → N2=1; N1=10 → N2=0 |
 
 **Macros disponibles** (todos en `registro_por_defecto()`): SUMA, RESTA, MULT, PRED, DOBLE, MAX, MIN; predicados (solo API): IF_CERO, IF_IGUAL, IF_MENOR.
 

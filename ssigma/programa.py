@@ -30,16 +30,16 @@ class Programa(object):
         if not isinstance(instrucciones, list):
             raise TypeError("instrucciones debe ser una lista")
         self.ins = list(instrucciones)
-        for i in self.ins:
+        for idx, i in enumerate(self.ins):
             if type(i) in INSTRUCCIONES_CON_DESTINO:
-                self.encontrar_label(i.destino)
+                self.encontrar_label(i.destino, desde_instruccion=idx)
 
-    def encontrar_label(self, label):
+    def encontrar_label(self, label, desde_instruccion=None):
         """Índice (0-based) de la primera instrucción con el label dado."""
         for idx, i in enumerate(self.ins):
             if i.label == label:
                 return idx
-        raise LabelNotFoundError(label)
+        raise LabelNotFoundError(label, desde_instruccion=desde_instruccion)
 
     def __str__(self):
         return "".join(i.__str__() + "\n" for i in self.ins)

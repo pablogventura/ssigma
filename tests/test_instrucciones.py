@@ -2,6 +2,7 @@
 import unittest
 from ssigma.instrucciones import (
     Sucesor, RestaPunto, Cero, CopiaNumerica, IfNumerico, Goto, Skip,
+    PrintNumerico, PrintPalabra, InputNumerico, InputPalabra,
     Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico,
 )
 
@@ -51,6 +52,26 @@ class TestInstruccionesNumericas(unittest.TestCase):
         i = Skip()
         self.assertEqual(i.var, 0)
         self.assertIn("SKIP", str(i))
+
+    def test_print_numerico(self):
+        i = PrintNumerico(3)
+        self.assertEqual(i.var, 3)
+        self.assertIn("PRINT N3", str(i))
+
+    def test_print_palabra(self):
+        i = PrintPalabra(1)
+        self.assertEqual(i.var, 1)
+        self.assertIn("PRINT P1", str(i))
+
+    def test_input_numerico(self):
+        i = InputNumerico(2)
+        self.assertEqual(i.var, 2)
+        self.assertIn("INPUT N2", str(i))
+
+    def test_input_palabra(self):
+        i = InputPalabra(1)
+        self.assertEqual(i.var, 1)
+        self.assertIn("INPUT P1", str(i))
 
 
 class TestInstruccionesPalabras(unittest.TestCase):

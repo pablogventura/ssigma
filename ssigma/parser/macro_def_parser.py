@@ -48,6 +48,22 @@ def _tmpl_skip(m):
     return {"tipo": "Skip"}
 
 
+def _tmpl_print_num(m):
+    return {"tipo": "PrintNumerico", "var": _v(m, "v_pre", "v_num")}
+
+
+def _tmpl_print_palabra(m):
+    return {"tipo": "PrintPalabra", "var": _v(m, "v_pre", "v_num")}
+
+
+def _tmpl_input_num(m):
+    return {"tipo": "InputNumerico", "var": _v(m, "v_pre", "v_num")}
+
+
+def _tmpl_input_palabra(m):
+    return {"tipo": "InputPalabra", "var": _v(m, "v_pre", "v_num")}
+
+
 def _tmpl_agregar(m):
     sim = m.group("simbolo")
     if not sim or len(sim) != 1:
@@ -91,6 +107,10 @@ _D = r"(?P<d_pre>L|A)(?P<d_num>[0-9]+)"
 PATRONES_CUERPO = [
     (r"^[ ]*GOTO[ ]*" + _D + r"[ ]*$", _tmpl_goto),
     (r"^[ ]*SKIP[ ]*$", _tmpl_skip),
+    (r"^[ ]*PRINT[ ]*" + _V + r"[ ]*$", _tmpl_print_num),
+    (r"^[ ]*PRINT[ ]*" + _W + r"[ ]*$", _tmpl_print_palabra),
+    (r"^[ ]*INPUT[ ]*" + _V + r"[ ]*$", _tmpl_input_num),
+    (r"^[ ]*INPUT[ ]*" + _W + r"[ ]*$", _tmpl_input_palabra),
     (r"^[ ]*" + _V1 + r"[ ]*<-[ ]*" + _V2 + r"[ ]*\+[ ]*1[ ]*$", _tmpl_sucesor),
     (r"^[ ]*" + _V1 + r"[ ]*<-[ ]*" + _V2 + r"[ ]*-·-[ ]*1[ ]*$", _tmpl_restapunto),
     (r"^[ ]*" + _V + r"[ ]*<-[ ]*0[ ]*$", _tmpl_cero),

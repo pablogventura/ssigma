@@ -1,0 +1,20 @@
+# F_n = n-ésimo Fibonacci (F_0=0, F_1=1). Entrada: N1 = n. Salida: N3 = F_n (PRINT N3)
+# Usar con Parser(registro_por_defecto()) o INCLUDE std.macros
+N6 <- 0
+N6 <- N6 + 1
+N2 <- 0
+N3 <- 0
+N3 <- N3 + 1
+IF N1 != 0 GOTO L1
+N3 <- 0
+GOTO L4
+L1: RESTA(N1, N1, N6)
+L2: IF N1 != 0 GOTO L3
+GOTO L4
+L3: SUMA(N4, N2, N3)
+N2 <- N3
+N3 <- N4
+RESTA(N1, N1, N6)
+GOTO L2
+L4: PRINT N3
+SKIP

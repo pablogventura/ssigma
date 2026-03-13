@@ -1,0 +1,41 @@
+# N1 = n. N2 = 1 si n es primo, 0 si no. Usa RESTA para resto y comparación.
+INCLUDE std.macros
+N2 <- 0
+N2 <- N2 + 1
+IF N1 != 0 GOTO L1
+N2 <- 0
+GOTO L9
+L1: N6 <- N1
+N6 <- N6 -·- 1
+IF N6 != 0 GOTO L2
+N2 <- 0
+GOTO L9
+L2: N6 <- N1
+N6 <- N6 -·- 1
+N6 <- N6 -·- 1
+IF N6 != 0 GOTO L3
+N2 <- 0
+N2 <- N2 + 1
+GOTO L9
+L3: N3 <- 0
+N3 <- N3 + 1
+N3 <- N3 + 1
+L4: RESTA(N6, N1, N3)
+IF N6 != 0 GOTO L5
+GOTO L8
+L5: N5 <- N1
+L6: RESTA(N6, N5, N3)
+IF N6 != 0 GOTO L7
+RESTA(N7, N5, N3)
+IF N7 != 0 GOTO L11
+RESTA(N8, N3, N5)
+IF N8 != 0 GOTO L10
+L11: N2 <- 0
+GOTO L9
+L7: N5 <- N6
+GOTO L6
+L10: N3 <- N3 + 1
+GOTO L4
+L8: SKIP
+L9: PRINT N2
+SKIP

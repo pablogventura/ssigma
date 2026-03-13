@@ -82,3 +82,43 @@ class Skip(Instruccion):
 
     def __str__(self):
         return super(Skip, self).__str__() + "SKIP"
+
+
+class PrintNumerico(Instruccion):
+    """PRINT Nk — extensión: imprime el valor de Nk (salida estándar o maquina.salida)."""
+    def __init__(self, var, label=None):
+        super(PrintNumerico, self).__init__(var, label)
+        self.es_numerica = True
+
+    def __str__(self):
+        return super(PrintNumerico, self).__str__() + "PRINT N%s" % self.var
+
+
+class PrintPalabra(Instruccion):
+    """PRINT Pk — extensión: imprime el valor de Pk (salida estándar o maquina.salida)."""
+    def __init__(self, var, label=None):
+        super(PrintPalabra, self).__init__(var, label)
+        self.es_numerica = False
+
+    def __str__(self):
+        return super(PrintPalabra, self).__str__() + "PRINT P%s" % self.var
+
+
+class InputNumerico(Instruccion):
+    """INPUT Nk — extensión: lee un entero del usuario y lo guarda en Nk."""
+    def __init__(self, var, label=None):
+        super(InputNumerico, self).__init__(var, label)
+        self.es_numerica = True
+
+    def __str__(self):
+        return super(InputNumerico, self).__str__() + "INPUT N%s" % self.var
+
+
+class InputPalabra(Instruccion):
+    """INPUT Pk — extensión: lee una línea (palabra) del usuario y la guarda en Pk."""
+    def __init__(self, var, label=None):
+        super(InputPalabra, self).__init__(var, label)
+        self.es_numerica = False
+
+    def __str__(self):
+        return super(InputPalabra, self).__str__() + "INPUT P%s" % self.var

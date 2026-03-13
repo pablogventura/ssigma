@@ -1,0 +1,8 @@
+N1 <- 0
+N1 <- N1 + 1
+N1 <- N1 + 1
+PRINT N1
+N2 <- N1
+N2 <- N2 + 1
+PRINT N2
+SKIP

@@ -80,3 +80,62 @@ class TestEjemplos(unittest.TestCase):
         e.numericas[3] = 4
         e.ejecutar()
         self.assertEqual(e.numericas[1], 12)
+
+    def test_print_ejemplo(self):
+        from io import StringIO
+        prog = self._prog_desde_archivo("print_ejemplo.code")
+        e = Ejecucion(prog)
+        e.debug = False
+        e.salida = out = StringIO()
+        e.ejecutar()
+        self.assertEqual(out.getvalue(), "2\n3\n")
+
+    def test_input_ejemplo(self):
+        from io import StringIO
+        prog = self._prog_desde_archivo("input_ejemplo.code")
+        e = Ejecucion(prog)
+        e.debug = False
+        e.entrada = iter(["5", "100"])
+        e.salida = out = StringIO()
+        e.ejecutar()
+        self.assertEqual(e.numericas[1], 6)
+        self.assertEqual(e.numericas[2], 100)
+        self.assertEqual(out.getvalue(), "6\n100\n")
+
+    def test_fibonacci_k10_devuelve_55(self):
+        prog = self._prog_desde_archivo("fibonacci.code", con_macros=True)
+        e = Ejecucion(prog)
+        e.debug = False
+        e.numericas[1] = 10
+        e.salida = out = __import__("io").StringIO()
+        e.ejecutar()
+        self.assertEqual(e.numericas[3], 55)
+        self.assertEqual(out.getvalue().strip(), "55")
+
+    def test_fibonacci_k0_devuelve_0(self):
+        prog = self._prog_desde_archivo("fibonacci.code", con_macros=True)
+        e = Ejecucion(prog)
+        e.debug = False
+        e.numericas[1] = 0
+        e.ejecutar()
+        self.assertEqual(e.numericas[3], 0)
+
+    def test_primo_7_es_primo(self):
+        prog = self._prog_desde_archivo("primo.code", con_macros=True)
+        e = Ejecucion(prog)
+        e.debug = False
+        e.numericas[1] = 7
+        e.salida = out = __import__("io").StringIO()
+        e.ejecutar()
+        self.assertEqual(e.numericas[2], 1)
+        self.assertEqual(out.getvalue().strip(), "1")
+
+    def test_primo_10_no_es_primo(self):
+        prog = self._prog_desde_archivo("primo.code", con_macros=True)
+        e = Ejecucion(prog)
+        e.debug = False
+        e.numericas[1] = 10
+        e.salida = out = __import__("io").StringIO()
+        e.ejecutar()
+        self.assertEqual(e.numericas[2], 0)
+        self.assertEqual(out.getvalue().strip(), "0")

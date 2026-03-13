@@ -8,18 +8,18 @@ from .maquina import Ejecucion
 from .infinitupla import Infinitupla
 from .instrucciones import (
     Instruccion, Sucesor, RestaPunto, Cero, CopiaNumerica,
-    IfNumerico, Goto, Skip,
+    IfNumerico, Goto, Skip, PrintNumerico, PrintPalabra, InputNumerico, InputPalabra,
     Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico,
 )
-from .exceptions import SSigmaError, ParseError, LabelNotFoundError
+from .exceptions import SSigmaError, ParseError, LabelNotFoundError, ExecutionError
 from .macros import Macro, RegistroMacros, registro_por_defecto, MacroError
 
 __all__ = [
     "Parser", "Programa", "Ejecucion", "Infinitupla",
     "cargar_programa", "guardar_programa",
     "Instruccion", "Sucesor", "RestaPunto", "Cero", "CopiaNumerica",
-    "IfNumerico", "Goto", "Skip",
+    "IfNumerico", "Goto", "Skip", "PrintNumerico", "PrintPalabra",
     "Agregar", "Quitar", "VaciarPalabra", "CopiaPalabra", "IfAlfabetico",
-    "SSigmaError", "ParseError", "LabelNotFoundError",
+    "SSigmaError", "ParseError", "LabelNotFoundError", "ExecutionError",
     "Macro", "RegistroMacros", "registro_por_defecto", "MacroError",
 ]
