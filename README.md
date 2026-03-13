@@ -1,6 +1,10 @@
 # S-Sigma — Implementación del lenguaje S^Σ
 
-Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann). La definición formal está en **`definicion/`** (def.html, RESUMEN_LENGUAJE_S_SIGMA.md).
+Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann). Este lenguaje corresponde al definido en la materia **Lenguajes formales y Computabilidad** de la FaMAF (UNC), dictada por Diego Vaggione y Miguel Campercholi. El apunte está disponible en [www.granlogico.com](https://www.granlogico.com).
+
+La definición formal usada en este proyecto está en **`definicion/`** (def.html, RESUMEN_LENGUAJE_S_SIGMA.md).
+
+**Instalación:** `pip install ssigma` | [PyPI](https://pypi.org/project/ssigma/)
 
 ---
 
@@ -12,7 +16,7 @@ Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann
 - **Línea en blanco** = fin del programa (el parser deja de leer).
 - **Mayúsculas/minúsculas**: el parser normaliza a mayúsculas.
 - **Variables**: `N1`, `N2`, … (números naturales, índice ≥ 1); `P1`, `P2`, … (palabras sobre el alfabeto).
-- **Comentarios**: no hay sintaxis oficial; en archivos `.macros` se usa `#`.
+- **Comentarios**: en archivos `.code` y `.macros`, las líneas que empiezan por `#` se ignoran.
 
 Ejemplo mínimo:
 
@@ -63,7 +67,8 @@ Ver **`examples/mi_suma.macros`** y **`examples/prog_con_include.code`**.
 ```
 ssigma/                 # Paquete principal
   __init__.py           # API pública
-  exceptions.py         # SSigmaError, ParseError, LabelNotFoundError
+  cli.py                # Comando ssigma (ejecutar .code desde la terminal)
+  exceptions.py         # SSigmaError, ParseError, LabelNotFoundError, ExecutionError
   instrucciones/        # AST (Ins^Σ)
     base.py             # Clase Instruccion
     numericas.py        # Sucesor, RestaPunto, Cero, CopiaNumerica, IfNumerico, Goto, Skip
@@ -77,9 +82,14 @@ ssigma/                 # Paquete principal
   maquina.py            # Ejecución (estado, paso, orquilla Ψ_P)
   ejecutor.py           # Semántica: un paso por tipo de instrucción
   infinitupla.py        # Estado s⃗ (numéricas) y σ⃗ (palabras)
-examples/
-  devuelveunoconh.code
+examples/               # Programas de ejemplo (.code y .macros)
+  fibonacci.code        # n-ésimo Fibonacci
+  primo.code            # Test de primalidad
+  std.macros            # SUMA y RESTA para INCLUDE
+  ...
 definicion/             # Definición formal del lenguaje
+scripts/
+  publish_pypi.sh       # Publicar en PyPI (build + twine)
 test.py                 # Script de prueba
 ```
 
@@ -166,6 +176,11 @@ resultado = f("g")              # P1 = "g" → devuelve N1 al terminar
 
 **PRINT e INPUT:** Por defecto PRINT escribe en la salida estándar e INPUT lee con `input()`. Para tests o redirección: asigna `e.salida` (objeto con `.write()`) y/o `e.entrada` (iterador de líneas, p. ej. `iter(["5", "hola"])`).
 
+**Errores:** La librería lanza excepciones claras con contexto:
+- **ParseError**: sintaxis inválida o macro no registrada; incluye número de línea, archivo y fragmento de la línea.
+- **LabelNotFoundError**: un GOTO/IF referencia un label que no existe; indica desde qué instrucción se referencia.
+- **ExecutionError**: fallos en tiempo de ejecución (INPUT no numérico, no hay más entrada, instrucción no reconocida); incluye número de instrucción, paso y código.
+
 **Tests y script de prueba:**
 
 ```bash
@@ -177,30 +192,36 @@ python3 test.py
 
 | Qué quieres hacer | Dónde mirar |
 |-------------------|-------------|
+| Instalar y ejecutar desde terminal | `pip install ssigma` o `pipx install ssigma`; luego `ssigma archivo.code` |
 | Sintaxis de cada instrucción | Tabla "Instrucciones implementadas" arriba; **definicion/RESUMEN_LENGUAJE_S_SIGMA.md** |
-| Ejemplos de programas | **examples/** y **examples/README.md** |
+| Ejemplos de programas | **examples/** y **examples/README.md** (Fibonacci, primo, SUMA, INPUT, etc.) |
 | Definir macros en archivos | Sección "Definir tus propios macros" arriba; **examples/mi_suma.macros** |
-| Incluir macros desde un .code | Línea `INCLUDE ruta.macros`; **examples/prog_con_include.code** |
+| Incluir macros desde un .code | Línea `INCLUDE ruta.macros`; **examples/prog_con_include.code**, **examples/std.macros** |
+| Errores (sintaxis, ejecución) | Sección "Errores" en "Uso desde Python"; **ParseError**, **ExecutionError** |
 | Definición formal del lenguaje | **definicion/def.html** (sección 4.3), **definicion/COBERTURA_IMPLEMENTACION.md** |
 
 ## Instalación
 
-- **Con pipx** (recomendado para usar el comando `ssigma` sin tocar el entorno global):
+- **Desde PyPI** (una vez publicado):
   ```bash
-  pipx install .
+  pip install ssigma
+  pipx install ssigma   # comando ssigma en un entorno aislado
   ```
-  Desde el directorio del repo. Luego puedes ejecutar un programa `.code` con:
+
+- **Desde el repo** (desarrollo o última versión):
+  ```bash
+  pip install .
+  pipx install .        # desde el directorio del repo
+  ```
+  Luego puedes ejecutar un programa `.code` con:
   ```bash
   ssigma examples/solo_numericos.code
+  ssigma examples/fibonacci.code   # N1=10 → imprime 55
+  ssigma -v archivo.code            # modo verbose
   ssigma --help
   ```
 
-- **Con pip** (como librería o con comando `ssigma`):
-  ```bash
-  pip install .
-  ```
-
-- **Sin instalar** (desde el repo): asegúrate de tener Python 3 y ejecuta los tests con `python -m unittest discover -s tests -v`.
+- **Sin instalar** (solo tests): desde la raíz del repo, `python -m unittest discover -s tests -v`.
 
 ## Publicar en PyPI
 
