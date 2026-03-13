@@ -1,0 +1,23 @@
+# LaTeX auxiliares
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# PDF (opcional: descomenta si no quieres versionar el PDF generado)
+# *.pdf
+
+# Build y temporales
+*.nav
+*.snm
+*.vrb
+_minted-*
