@@ -8,17 +8,24 @@ Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann
 ## Estructura
 
 ```
-ssigma/             # Paquete principal
-  __init__.py       # API pública
-  instrucciones.py  # AST: todas las instrucciones (Ins^Σ)
-  parser.py         # Parser de líneas → Programa
-  programa.py       # Programa (lista de instrucciones, encontrar_label)
-  maquina.py        # Ejecución (configuración, paso S_P, orquilla Ψ_P)
-  infinitupla.py    # Estado s⃗ (numéricas) y σ⃗ (palabras)
+ssigma/                 # Paquete principal
+  __init__.py           # API pública
+  exceptions.py         # SSigmaError, ParseError, LabelNotFoundError
+  instrucciones/        # AST (Ins^Σ)
+    base.py             # Clase Instruccion
+    numericas.py        # Sucesor, RestaPunto, Cero, CopiaNumerica, IfNumerico, Goto, Skip
+    palabras.py        # Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico
+  parser/               # Parser de líneas → Programa
+    patrones.py         # Regex y fábricas por tipo (data-driven)
+    parser.py           # Parser
+  programa.py           # Programa, cargar/guardar (pickle)
+  maquina.py            # Ejecución (estado, paso, orquilla Ψ_P)
+  ejecutor.py           # Semántica: un paso por tipo de instrucción
+  infinitupla.py        # Estado s⃗ (numéricas) y σ⃗ (palabras)
 examples/
   devuelveunoconh.code
-definicion/         # Definición formal del lenguaje
-test.py             # Script de prueba
+definicion/             # Definición formal del lenguaje
+test.py                 # Script de prueba
 ```
 
 ## Instrucciones implementadas

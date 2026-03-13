@@ -11,6 +11,7 @@ from .instrucciones import (
     IfNumerico, Goto, Skip,
     Agregar, Quitar, VaciarPalabra, CopiaPalabra, IfAlfabetico,
 )
+from .exceptions import SSigmaError, ParseError, LabelNotFoundError
 
 __all__ = [
     "Parser", "Programa", "Ejecucion", "Infinitupla",
@@ -18,4 +19,5 @@ __all__ = [
     "Instruccion", "Sucesor", "RestaPunto", "Cero", "CopiaNumerica",
     "IfNumerico", "Goto", "Skip",
     "Agregar", "Quitar", "VaciarPalabra", "CopiaPalabra", "IfAlfabetico",
+    "SSigmaError", "ParseError", "LabelNotFoundError",
 ]
