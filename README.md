@@ -183,9 +183,39 @@ python3 test.py
 | Incluir macros desde un .code | Línea `INCLUDE ruta.macros`; **examples/prog_con_include.code** |
 | Definición formal del lenguaje | **definicion/def.html** (sección 4.3), **definicion/COBERTURA_IMPLEMENTACION.md** |
 
+## Instalación
+
+- **Con pipx** (recomendado para usar el comando `ssigma` sin tocar el entorno global):
+  ```bash
+  pipx install .
+  ```
+  Desde el directorio del repo. Luego puedes ejecutar un programa `.code` con:
+  ```bash
+  ssigma examples/solo_numericos.code
+  ssigma --help
+  ```
+
+- **Con pip** (como librería o con comando `ssigma`):
+  ```bash
+  pip install .
+  ```
+
+- **Sin instalar** (desde el repo): asegúrate de tener Python 3 y ejecuta los tests con `python -m unittest discover -s tests -v`.
+
+## Publicar en PyPI
+
+1. Actualiza la versión en `pyproject.toml` (y en `ssigma/cli.py` en `--version` si quieres que coincida).
+2. Crea un venv, activa y ejecuta:
+   ```bash
+   pip install -U build twine
+   ./scripts/publish_pypi.sh         # sube a Test PyPI
+   ./scripts/publish_pypi.sh --pypi   # sube a PyPI real
+   ```
+   Para PyPI real necesitas configurar token o usuario en `~/.pypirc` o variables de entorno.
+
 ## Requisitos
 
-- Python 3.
+- Python 3.7+.
 
 ## Licencia
 
