@@ -1,6 +1,6 @@
 # S-Sigma — Implementación del lenguaje S^Σ
 
-Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann). La definición formal está en el directorio **`../definicion/`** del repositorio:
+Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann). La definición formal está en el directorio **`definicion/`** del repositorio:
 
 - **definicion/def.html** — Documento principal (sección 4.3)
 - **definicion/RESUMEN_LENGUAJE_S_SIGMA.md** — Resumen de sintaxis y semántica
@@ -8,17 +8,17 @@ Implementación en Python del lenguaje **S^Σ** (paradigma imperativo de Neumann
 ## Estructura
 
 ```
-trunk/
-  ssigma/           # Paquete principal
-    __init__.py     # API pública
-    instrucciones.py # AST: todas las instrucciones (Ins^Σ)
-    parser.py       # Parser de líneas → Programa
-    programa.py     # Programa (lista de instrucciones, encontrar_label)
-    maquina.py      # Ejecución (configuración, paso S_P, orquilla Ψ_P)
-    infinitupla.py  # Estado s⃗ (numéricas) y σ⃗ (palabras)
-  examples/
-    devuelveunoconh.code
-  test.py           # Script de prueba
+ssigma/             # Paquete principal
+  __init__.py       # API pública
+  instrucciones.py  # AST: todas las instrucciones (Ins^Σ)
+  parser.py         # Parser de líneas → Programa
+  programa.py       # Programa (lista de instrucciones, encontrar_label)
+  maquina.py        # Ejecución (configuración, paso S_P, orquilla Ψ_P)
+  infinitupla.py    # Estado s⃗ (numéricas) y σ⃗ (palabras)
+examples/
+  devuelveunoconh.code
+definicion/         # Definición formal del lenguaje
+test.py             # Script de prueba
 ```
 
 ## Instrucciones implementadas
@@ -44,7 +44,7 @@ Las etiquetas son opcionales: **Lk** al inicio de la línea. Índices desde 1 (N
 
 ## Uso
 
-Desde el directorio `trunk/`:
+Desde la raíz del repositorio:
 
 ```python
 from ssigma import Parser, Ejecucion
