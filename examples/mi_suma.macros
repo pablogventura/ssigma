@@ -1,0 +1,12 @@
+# Macro SUMA definido en el lenguaje: V1 <- V2 + V3
+MACRO SUMA V1 V2 V3
+V4 <- V2
+V5 <- V3
+V1 <- V4
+A1: IF V5 != 0 GOTO A2
+GOTO A3
+A2: V5 <- V5 -·- 1
+V1 <- V1 + 1
+GOTO A1
+A3: SKIP
+ENDMACRO

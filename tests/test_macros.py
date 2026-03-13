@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
-from ssigma import Macro, RegistroMacros, Programa, Ejecucion, registro_por_defecto
+import os
+from ssigma import Macro, RegistroMacros, Programa, Ejecucion, Parser, registro_por_defecto
 from ssigma.macros import macro_suma, MacroError
 from ssigma.instrucciones import CopiaNumerica
+from ssigma.parser.macro_def_parser import cargar_archivo_macros, parsear_linea_cuerpo
 
 
 class TestMacro(unittest.TestCase):
@@ -57,6 +59,35 @@ class TestMacro(unittest.TestCase):
         reg = registro_por_defecto()
         with self.assertRaises(MacroError):
             reg.expandir_llamada("SUMA", [1, 2])
+
+    def test_parsear_linea_cuerpo(self):
+        lab, d = parsear_linea_cuerpo("V4 <- V2")
+        self.assertIsNone(lab)
+        self.assertEqual(d, {"tipo": "CopiaNumerica", "var_dest": "V4", "var_src": "V2"})
+        lab, d = parsear_linea_cuerpo("A1: IF V5 != 0 GOTO A2")
+        self.assertEqual(lab, "A1")
+        self.assertEqual(d.get("tipo"), "IfNumerico")
+        self.assertEqual(d.get("var"), "V5")
+        self.assertEqual(d.get("destino"), "A2")
+
+    def test_cargar_archivo_macros_y_include(self):
+        base = os.path.join(os.path.dirname(__file__), "..", "examples")
+        reg = cargar_archivo_macros(os.path.join(base, "mi_suma.macros"))
+        self.assertIsNotNone(reg.obtener("SUMA"))
+        ins = reg.expandir_llamada("SUMA", [1, 2, 3])
+        prog = Programa(ins)
+        e = Ejecucion(prog)
+        e.debug = False
+        e.numericas[2], e.numericas[3] = 6, 3
+        e.ejecutar()
+        self.assertEqual(e.numericas[1], 9)
+        p = Parser()
+        prog2 = p.programa_desde_archivo(os.path.join(base, "prog_con_include.code"), verbose=False)
+        e2 = Ejecucion(prog2)
+        e2.debug = False
+        e2.numericas[2], e2.numericas[3] = 2, 3
+        e2.ejecutar()
+        self.assertEqual(e2.numericas[1], 5)
 
     def test_resta_mult_pred_doble_max_min(self):
         from ssigma import Ejecucion

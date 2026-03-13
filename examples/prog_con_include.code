@@ -1,0 +1,2 @@
+INCLUDE mi_suma.macros
+SUMA(N1, N2, N3)

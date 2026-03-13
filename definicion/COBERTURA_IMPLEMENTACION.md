@@ -61,6 +61,14 @@ Referencia: `definicion/RESUMEN_LENGUAJE_S_SIGMA.md` y `definicion/def.html` (se
 5. **Macros en código fuente**  
    En archivos `.code` solo se admiten llamadas a macros con argumentos **numéricos** (p. ej. `SUMA(N1,N2,N3)`). Los predicados con label (IF_CERO, IF_IGUAL, IF_MENOR) solo están soportados por **API** (`expandir_llamada(nombre, [var, label])`), no por sintaxis en el archivo.
 
+### Extensión: definición de macros en el lenguaje
+
+- **Archivos .macros**: se pueden definir macros en texto con la misma sintaxis S^Σ, usando variables de macro **Vn, Wn, An** (o N, P, L). Formato: `MACRO nombre param1 param2 ...` / cuerpo (instrucciones con V1, A1, etc.) / `ENDMACRO`.
+- **INCLUDE**: en un `.code` se permite la línea `INCLUDE ruta.macros`; la ruta es relativa al archivo actual. Los macros cargados quedan disponibles para llamadas `NOMBRE(N1, N2, ...)`.
+- Opcionalmente se puede pasar `macro_files=[...]` a `programa_desde_archivo()` para cargar archivos de macros antes de leer el programa.
+
+Esto no modifica la definición del lenguaje (los macros siguen siendo plantillas que se expanden); solo se añade una forma de especificar esas plantillas en archivos de texto en lugar de en Python.
+
 ---
 
 ## Conclusión

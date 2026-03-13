@@ -5,11 +5,15 @@
 import re
 from ..programa import Programa
 from .patrones import PATRONES, REGEX_LABEL
+from .macro_def_parser import cargar_archivo_macros, cargar_macros_desde_ruta
 
 # Llamada a macro: NOMBRE(Nn, Nn, ...) con N únicamente (macros numéricos).
 REGEX_MACRO_LLAMADA = re.compile(
     r"^[ ]*(?P<nombre>\w+)[ ]*\([ ]*(?P<args>N[0-9]+(?:[ ]*,[ ]*N[0-9]+)*)[ ]*\)[ ]*$"
 )
+
+# INCLUDE path (relativo al archivo actual)
+REGEX_INCLUDE = re.compile(r"^[ ]*INCLUDE[ ]+(.+)$", re.IGNORECASE)
 
 
 def _parsear_args_macro(s):
@@ -22,10 +26,32 @@ class Parser(object):
     def __init__(self, registro_macros=None):
         self.registro_macros = registro_macros
 
-    def programa_desde_archivo(self, path, verbose=True):
+    def programa_desde_archivo(self, path, verbose=True, macro_files=None, encoding="utf-8"):
+        """
+        Carga un programa desde un archivo.
+        macro_files: lista opcional de rutas a archivos .macros a cargar antes (resueltas respecto al dir de path).
+        Si el archivo contiene líneas INCLUDE otro.macros, se cargan esos archivos (relativos al archivo actual).
+        """
+        if self.registro_macros is None:
+            from ..macros import RegistroMacros
+            self.registro_macros = RegistroMacros()
+        if macro_files:
+            for mf in macro_files:
+                cargar_macros_desde_ruta(path, mf, self.registro_macros, encoding)
         result = []
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding=encoding) as f:
             for line in f:
+                linea_strip = line.strip()
+                if linea_strip:
+                    mm = REGEX_INCLUDE.match(linea_strip)
+                else:
+                    mm = None
+                if mm:
+                    path_include = mm.group(1).strip().strip('"\'')
+                    cargar_macros_desde_ruta(path, path_include, self.registro_macros, encoding)
+                    if verbose:
+                        print("(INCLUDE %s)" % path_include)
+                    continue
                 inst = self.instruccion(line)
                 if inst is not None:
                     if verbose:

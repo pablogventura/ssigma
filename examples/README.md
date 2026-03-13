@@ -15,6 +15,16 @@ Programas en sintaxis concreta para cargar con `Parser().programa_desde_archivo(
 
 **Macros disponibles** (todos en `registro_por_defecto()`): SUMA, RESTA, MULT, PRED, DOBLE, MAX, MIN; predicados (solo API): IF_CERO, IF_IGUAL, IF_MENOR.
 
+### Definir e incluir macros en el lenguaje
+
+Puedes **definir macros en archivos** usando la sintaxis S^Σ con variables de macro (Vn, An, Wn):
+
+- Archivo **.macros** (o cualquier nombre): bloques `MACRO nombre param1 param2 ...` / cuerpo (una instrucción por línea, con V1, A1, etc.) / `ENDMACRO`. Comentarios con `#`.
+- En un **.code** puedes poner `INCLUDE ruta.macros` (ruta relativa al archivo actual); se cargan esos macros y luego puedes usar `NOMBRE(N1, N2, ...)`.
+- Opcional: `Parser().programa_desde_archivo(main.code, macro_files=["carpeta/mis.macros"])` para cargar archivos de macros antes de leer el programa.
+
+Ejemplos: `mi_suma.macros` (define SUMA), `prog_con_include.code` (INCLUDE + SUMA).
+
 Para ejecutar todos los tests (incluyen estos ejemplos):
 
 ```bash
